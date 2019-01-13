@@ -1,0 +1,20 @@
+{
+    "name": "nash/n-inject",
+    "description": "一个依赖注入的工具",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "nash-L",
+            "email": "18695616095@163.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "NashInject\\": "src/"
+        }
+    }
+}

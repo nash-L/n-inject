@@ -27,8 +27,8 @@ $inject = new \NashInject\Injector;
 
 $a = new A();
 
-// $inject->share($a);
-$inject->share(A::class);
+ $inject->share($a);
+//$inject->share(A::class);
 
 $b = $inject->make(B::class);
 $c = $inject->make(B::class);

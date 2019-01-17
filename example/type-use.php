@@ -10,7 +10,7 @@ define('ROOT', dirname(__DIR__));
 
 require ROOT . '/vendor/autoload.php';
 
-class TypeInt implements \NashInject\InjectorType {
+class TypeInt extends \NashInject\Type\InjectorType {
 
   public $data;
 

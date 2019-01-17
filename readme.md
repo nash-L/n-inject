@@ -63,7 +63,7 @@ $inject->execute(function (PDO $pdo) {
 });
 
 // 自定义类型
-class TypeInt implements \NashInject\InjectorType {
+class TypeInt implements \NashInject\Type\InjectorType {
   private $data;
 
   public function __construct($data)

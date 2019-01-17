@@ -17,7 +17,7 @@ use ReflectionFunction;
 
 class Injector
 {
-    protected $share, $shareDefine, $define;
+    protected $share, $shareDefine, $define, $making;
 
     /**
      * Injector constructor.
@@ -28,6 +28,7 @@ class Injector
         $this->share = [];
         $this->define = [];
         $this->shareDefine = [];
+        $this->making = [];
         $this->share($this);
     }
 
@@ -46,7 +47,7 @@ class Injector
             $this->share[get_class($objectOrClassName)] = $objectOrClassName;
         } else {
             // 错误的数据类型
-            throw new InjectorException('The first param of function "share" must be a string or object', InjectorException::ERROR_PARAM);
+            throw new InjectorException(InjectorException::ERROR_PARAM, 'The first param of function "share" must be a string or object');
         }
     }
 
@@ -72,13 +73,21 @@ class Injector
         if (isset($this->share[$className])) {
             return $this->share[$className];
         }
+        if (isset($this->making[$className])) {
+            // 依赖发生循环
+            throw new InjectorException(InjectorException::ERROR_DEPENDENT_CYCLE, 'The type of "' . $className . '" dependency loops');
+        }
+        $this->making[$className] = $className;
         if (empty($this->define[$className])) {
             return $this->prepareExecute($this->makeObjectFromConstruct($className, $params), $this->define[$className] ?? null);
         }
         $definedParams = $this->define[$className]['params'];
-        return $this->prepareExecute(is_callable($definedParams)
-            ? $this->execute($definedParams, $params)
-            : $this->makeObjectFromConstruct($className, array_merge($definedParams, $params)), $this->define[$className] ?? null);
+        return $this->prepareExecute(
+            is_callable($definedParams)
+                ? $this->execute($definedParams, $params)
+                : $this->makeObjectFromConstruct($className, array_merge($definedParams, $params))
+            , $this->define[$className] ?? null
+        );
     }
 
     /**
@@ -106,9 +115,10 @@ class Injector
         if (is_callable($prepare)) {
             call_user_func($prepare, $obj, $this);
         }
-        if (isset($this->shareDefine[get_class($obj)])) {
+        if (isset($this->shareDefine[$className = get_class($obj)])) {
             $this->share($obj);
         }
+        unset($this->making[$className]);
         return $obj;
     }
 
@@ -149,7 +159,7 @@ class Injector
                     return $callParam['defaultValue'];
                 } else {
                     // 无法产生参数
-                    throw new InjectorException('Can\'t make param "$' . $callParam['name'] . '"', InjectorException::ERROR_CON_NOT_MAKE_PARAM, $e);
+                    throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"', $e);
                 }
             }
         }, $callParams);
@@ -169,7 +179,7 @@ class Injector
             return $callParam['defaultValue'];
         }
         // 无法产生参数
-        throw new InjectorException('Can\'t make param "$' . $callParam['name'] . '"', InjectorException::ERROR_CON_NOT_MAKE_PARAM);
+        throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"');
     }
 
     /**
@@ -188,7 +198,7 @@ class Injector
                 return $callParam['defaultValue'];
             } else {
                 // 无法产生参数
-                throw new InjectorException('Can\'t make param "$' . $callParam['name'] . '"', InjectorException::ERROR_CON_NOT_MAKE_PARAM, $e);
+                throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"', $e);
             }
         }
     }

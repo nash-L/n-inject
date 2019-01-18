@@ -70,10 +70,10 @@ class Injector
      */
     public function make(string $className, array $params = [])
     {
-        if (isset($this->share[$className])) {
+        if (key_exists($className, $this->share)) {
             return $this->share[$className];
         }
-        if (isset($this->making[$className])) {
+        if (key_exists($className, $this->making)) {
             // 依赖发生循环
             throw new InjectorException(InjectorException::ERROR_DEPENDENT_CYCLE, 'The type of "' . $className . '" dependency loops');
         }
@@ -115,7 +115,7 @@ class Injector
         if (is_callable($prepare)) {
             call_user_func($prepare, $obj, $this);
         }
-        if (isset($this->shareDefine[$className = get_class($obj)])) {
+        if (key_exists($className = get_class($obj), $this->shareDefine)) {
             $this->share($obj);
         }
         unset($this->making[$className]);
@@ -155,7 +155,7 @@ class Injector
             try {
                 return $this->make($callParam['className']);
             } catch (\Exception $e) {
-                if (isset($callParam['defaultValue'])) {
+                if ($callParam['hasDefaultValue']) {
                     return $callParam['defaultValue'];
                 } else {
                     // 无法产生参数
@@ -173,9 +173,9 @@ class Injector
      */
     protected function makeCallParamFromInput($callParam, $inputParams)
     {
-        if (isset($inputParams[$callParam['name']])) {
+        if (key_exists($callParam['name'], $inputParams)) {
             return $inputParams[$callParam['name']];
-        } elseif (isset($callParam['defaultValue'])) {
+        } elseif ($callParam['hasDefaultValue']) {
             return $callParam['defaultValue'];
         }
         // 无法产生参数
@@ -190,17 +190,14 @@ class Injector
      */
     protected function makeCallParamToType($callParam, $inputParams)
     {
-        try {
-            $paramClassName = $callParam['className'];
-            return new $paramClassName($this->makeCallParamFromInput($callParam, $inputParams), $this);
-        } catch (\Exception $e) {
-            if (isset($callParam['defaultValue'])) {
-                return $callParam['defaultValue'];
-            } else {
-                // 无法产生参数
-                throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"', $e);
-            }
+        $paramClassName = $callParam['className'];
+        if (key_exists($callParam['name'], $inputParams)) {
+            return new $paramClassName($inputParams[$callParam['name']], $this);
+        } elseif ($callParam['hasDefaultValue']) {
+            return new $paramClassName($callParam['defaultValue'], $this);
         }
+        // 无法产生参数
+        throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"');
     }
 
     /**
@@ -241,7 +238,7 @@ class Injector
                 $params[$index]['className'] = $paramClass->getName();
                 $params[$index]['isInjectType'] = $paramClass->isSubclassOf(InjectorType::class);
             }
-            if ($param->isDefaultValueAvailable()) {
+            if ($params[$index]['hasDefaultValue'] = $param->isDefaultValueAvailable()) {
                 $params[$index]['defaultValue'] = $param->getDefaultValue();
             }
         }

@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: 18695
- * Date: 2019/1/15
- * Time: 23:13
+ * Date: 2019/1/19
+ * Time: 1:25
  */
 
 namespace NashInject\Exception;
@@ -12,12 +12,9 @@ namespace NashInject\Exception;
 use Throwable;
 use Exception;
 
-class InjectorException extends Exception
+class InjectorTypeException extends Exception
 {
-    const ERROR_CLASS_NOT_EXISTS = 1;
-    const ERROR_CON_NOT_MAKE_PARAM = 2;
-    const ERROR_PARAM = 3;
-    const ERROR_DEPENDENT_CYCLE = 4;
+    const ERROR_TYPE = 1;
 
     function __construct(int $code = 0, string $message = '', Throwable $previous = null)
     {

@@ -10,35 +10,21 @@ define('ROOT', dirname(__DIR__));
 
 require ROOT . '/vendor/autoload.php';
 
-class TypeInt extends \NashInject\Type\InjectorType {
-
-  public $data;
-
-  public function __construct($data)
-  {
-    $this->data = 0;
-    if (is_numeric($data)) {
-      $this->data = intval($data);
-    }
-  }
-
-}
-
 class A {
 
   public $name, $age;
 
-  public function __construct($name, TypeInt $age)
+  public function __construct($name, \NashInject\Type\HashType $age = null)
   {
     $this->name = $name;
-    $this->age = $age->data;
+    $this->age = $age->getData();
   }
 
 }
 
 $inject = new \NashInject\Injector;
 
-$inject->define(A::class, ['name' => 'Nash-Liu', 'age' => '123']);
+$inject->define(A::class, ['name' => 'Nash-Liu', 'age' => '{"name":"test","age":12}']);
 
 $inject->execute(function (A $a) {
   var_dump($a);

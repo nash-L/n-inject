@@ -28,6 +28,6 @@ class HashType extends InjectorType
         if (is_object($data)) {
             return (array)$data;
         }
-        throw new InjectorTypeException(InjectorTypeException::ERROR_TYPE, 'Type Error');
+        throw new InjectorTypeException('Type Error', InjectorTypeException::ERROR_TYPE);
     }
 }

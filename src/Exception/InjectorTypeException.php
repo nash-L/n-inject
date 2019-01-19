@@ -9,15 +9,9 @@
 namespace NashInject\Exception;
 
 
-use Throwable;
 use Exception;
 
 class InjectorTypeException extends Exception
 {
     const ERROR_TYPE = 1;
-
-    function __construct(int $code = 0, string $message = '', Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
 }

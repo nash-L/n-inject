@@ -28,6 +28,6 @@ class ArrayType extends InjectorType
         if (is_array($data)) {
             return $data;
         }
-        throw new InjectorTypeException(InjectorTypeException::ERROR_TYPE, 'Type Error');
+        throw new InjectorTypeException('Type Error', InjectorTypeException::ERROR_TYPE);
     }
 }

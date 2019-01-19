@@ -25,6 +25,6 @@ class FloatType extends InjectorType
         } elseif (is_float($data)) {
             return $data;
         }
-        throw new InjectorTypeException(InjectorTypeException::ERROR_TYPE, 'Type Error');
+        throw new InjectorTypeException('Type Error', InjectorTypeException::ERROR_TYPE);
     }
 }

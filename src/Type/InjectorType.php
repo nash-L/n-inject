@@ -32,7 +32,7 @@ abstract class InjectorType
             if ($e instanceof InjectorTypeException) {
                 throw $e;
             }
-            throw new InjectorTypeException($e->getCode(), $e->getMessage(), $e);
+            throw new InjectorTypeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 

@@ -25,6 +25,6 @@ class BoolType extends InjectorType
         } elseif ($data === '0' || $data === 0) {
             return false;
         }
-        throw new InjectorTypeException(InjectorTypeException::ERROR_TYPE, 'Type Error');
+        throw new InjectorTypeException('Type Error', InjectorTypeException::ERROR_TYPE);
     }
 }

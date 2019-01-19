@@ -47,7 +47,7 @@ class Injector
             $this->share[get_class($objectOrClassName)] = $objectOrClassName;
         } else {
             // 错误的数据类型
-            throw new InjectorException(InjectorException::ERROR_PARAM, 'The first param of function "share" must be a string or object');
+            throw new InjectorException('The first param of function "share" must be a string or object', InjectorException::ERROR_PARAM);
         }
     }
 
@@ -75,7 +75,7 @@ class Injector
         }
         if (key_exists($className, $this->making)) {
             // 依赖发生循环
-            throw new InjectorException(InjectorException::ERROR_DEPENDENT_CYCLE, 'The type of "' . $className . '" dependency loops');
+            throw new InjectorException('The type of "' . $className . '" dependency loops', InjectorException::ERROR_DEPENDENT_CYCLE);
         }
         $this->making[$className] = $className;
         if (empty($this->define[$className])) {
@@ -159,7 +159,7 @@ class Injector
                     return $callParam['defaultValue'];
                 } else {
                     // 无法产生参数
-                    throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"', $e);
+                    throw new InjectorException('Can\'t make param "$' . $callParam['name'] . '"', InjectorException::ERROR_CON_NOT_MAKE_PARAM, $e);
                 }
             }
         }, $callParams);
@@ -179,7 +179,7 @@ class Injector
             return $callParam['defaultValue'];
         }
         // 无法产生参数
-        throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"');
+        throw new InjectorException('Can\'t make param "$' . $callParam['name'] . '"', InjectorException::ERROR_CON_NOT_MAKE_PARAM);
     }
 
     /**
@@ -197,7 +197,7 @@ class Injector
             return new $paramClassName($callParam['defaultValue'], $this);
         }
         // 无法产生参数
-        throw new InjectorException(InjectorException::ERROR_CON_NOT_MAKE_PARAM, 'Can\'t make param "$' . $callParam['name'] . '"');
+        throw new InjectorException('Can\'t make param "$' . $callParam['name'] . '"', InjectorException::ERROR_CON_NOT_MAKE_PARAM);
     }
 
     /**

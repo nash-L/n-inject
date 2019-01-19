@@ -15,19 +15,41 @@ use Exception;
 
 abstract class InjectorType
 {
-    protected $data, $inject;
+    protected $data, $injector;
 
     /**
      * InjectorType constructor.
      * @param $data
-     * @param Injector $inject
+     * @param Injector|null $injector
      * @throws InjectorTypeException
      */
-    final public function __construct($data, Injector $inject)
+    final public function __construct($data, ?Injector $injector = null)
     {
-        $this->inject = $inject;
+        $this->setInject($injector);
+        $this->data = null;
+        if ($data) {
+            $this->setData($data);
+        }
+    }
+
+    /**
+     * @param Injector|null $injector
+     */
+    final public function setInject(?Injector $injector)
+    {
+        $this->injector = $injector;
+    }
+
+    abstract public function validate($data);
+
+    /**
+     * @param $data
+     * @throws InjectorTypeException
+     */
+    final public function setData($data)
+    {
         try {
-            $this->data = is_null($data) ? null : $this->validate($data);
+            $this->data = $this->validate($data);
         } catch (Exception $e) {
             if ($e instanceof InjectorTypeException) {
                 throw $e;
@@ -35,8 +57,6 @@ abstract class InjectorType
             throw new InjectorTypeException($e->getMessage(), $e->getCode(), $e);
         }
     }
-
-    abstract public function validate($data);
 
     /**
      * @return mixed

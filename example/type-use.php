@@ -6,26 +6,29 @@
  * Time: 1:55
  */
 
+use NashInject\Type\DateType;
+
 define('ROOT', dirname(__DIR__));
 
 require ROOT . '/vendor/autoload.php';
 
-class A {
-
-  public $name, $age;
-
-  public function __construct($name, \NashInject\Type\HashType $age = null)
-  {
-    $this->name = $name;
-    $this->age = $age->getData();
-  }
-
+function searchData($query, DateType $startDate, DateType $endDate)
+{
+    return [
+        'keyword' => $query,
+        'create_at' => [
+            $startDate->getStartDateTime()->toTimestamp()->getData(),
+            $endDate->getEndDateTime()->toTimestamp()->getData()
+        ],
+        'create_time' => [
+            $startDate->getStartDateTime()->getData(),
+            $endDate->getEndDateTime()->getData()
+        ]
+    ];
 }
 
-$inject = new \NashInject\Injector;
+$inject = new \NashInject\Injector();
 
-$inject->define(A::class, ['name' => 'Nash-Liu', 'age' => '{"name":"test","age":12}']);
+$where = $inject->execute('searchData', ['query' => 'Hello', 'startDate' => '2018-12-22', 'endDate' => '2018-12-22']);
 
-$inject->execute(function (A $a) {
-  var_dump($a);
-});
+var_dump($where);

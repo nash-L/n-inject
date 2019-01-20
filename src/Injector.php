@@ -154,7 +154,7 @@ class Injector
             }
             try {
                 return $this->make($callParam['className']);
-            } catch (\Exception $e) {
+            } catch (InjectorException $e) {
                 if ($callParam['hasDefaultValue']) {
                     return $callParam['defaultValue'];
                 } else {

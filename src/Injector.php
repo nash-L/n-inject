@@ -79,14 +79,14 @@ class Injector
         }
         $this->making[$className] = $className;
         if (empty($this->define[$className])) {
-            return $this->prepareExecute($this->makeObjectFromConstruct($className, $params), $this->define[$className] ?? null);
+            return $this->prepareExecute($this->makeObjectFromConstruct($className, $params), null);
         }
         $definedParams = $this->define[$className]['params'];
         return $this->prepareExecute(
             is_callable($definedParams)
                 ? $this->execute($definedParams, $params)
                 : $this->makeObjectFromConstruct($className, array_merge($definedParams, $params))
-            , $this->define[$className] ?? null
+            , $this->define[$className]['prepare']
         );
     }
 

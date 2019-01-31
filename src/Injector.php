@@ -79,10 +79,10 @@ class Injector
         }
         $this->making[$className] = $className;
         if (empty($this->define[$className])) {
-            return $this->prepareExecute($this->makeObjectFromConstruct($className, $params), null);
+            return $this->prepareExecute($className, $this->makeObjectFromConstruct($className, $params), null);
         }
         $definedParams = $this->define[$className]['params'];
-        return $this->prepareExecute(
+        return $this->prepareExecute($className,
             is_callable($definedParams)
                 ? $this->execute($definedParams, $params)
                 : $this->makeObjectFromConstruct($className, array_merge($definedParams, $params))
@@ -105,18 +105,18 @@ class Injector
     }
 
     /**
+     * @param $className
      * @param $obj
      * @param $prepare
      * @return mixed
-     * @throws InjectorException
      */
-    protected function prepareExecute($obj, $prepare)
+    protected function prepareExecute($className, $obj, $prepare)
     {
         if (is_callable($prepare)) {
             call_user_func($prepare, $obj, $this);
         }
-        if (key_exists($className = get_class($obj), $this->shareDefine)) {
-            $this->share($obj);
+        if (key_exists($className, $this->shareDefine)) {
+            $this->share[$className] = $obj;
         }
         unset($this->making[$className]);
         return $obj;
